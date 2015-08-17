@@ -1,4 +1,12 @@
-﻿param(
+﻿<#
+.SYNOPSIS
+.DESCRIPTION
+.PARAMETER SourceInstanceName
+.EXAMPLE
+.OUTPUTS
+.NOTES
+#>
+param(
     [Parameter(Mandatory=$true)]  [string]$serverName,
     [Parameter(Mandatory=$false)] [string]$instanceName = "DEFAULT",
     [Parameter(Mandatory=$false)] [string]$databaseName,
@@ -29,7 +37,7 @@ $scriptingOptions = New-Object Microsoft.SqlServer.Management.Smo.Scripter ($scr
 $scriptingOptions.Options.BatchSize = 1
 $scriptingOptions.Options.ScriptBatchTerminator = $true
 $scriptingOptions.options.DriPrimaryKey = $true
-if ($saveTo -eq "File") { scriptingOptions.options.FileName = ("C:\temp\$fileName") }
+if ($saveTo -eq "File") { $scriptingOptions.options.FileName = $fileName }
 $scriptingOptions.Options.AppendToFile = $true
 
 Write-Verbose "Server name that contains objects to collect: $serverName\$instanceName"
@@ -97,11 +105,10 @@ foreach ($d in $databases)
     ScriptObjects $currentDatabase $scanType ($d.UserDefinedDataTypes | Where-object { -not $_.IsSystemObject }) "User-Defined Data Type" $lastScan
     ScriptObjects $currentDatabase $scanType ($d.UserDefinedFunctions | Where-object { -not $_.IsSystemObject }) "Functions" $lastScan.LastScan
     ScriptObjects $currentDatabase $scanType ($d.StoredProcedures | Where-object { -not $_.IsSystemObject }) "Stored Procedures" $lastScan.LastScan
-    ScriptObjects $currentDatabase $scanType ($d.Views | Where-object { -not $_.IsSystemObject }) "Views" $lastScan.LastScan
     ScriptObjects $currentDatabase $scanType ($d.tables | Where-object { -not $_.IsSystemObject }) "Table" $lastScan.LastScan
 	ScriptObjects $currentDatabase $scanType ($d.tables.indexes | Where-object { -not $_.IsSystemObject -and ($_.IndexKeyType.ToString()) -ne "DriPrimaryKey"}) "Indexes" $lastScan.LastScan
 	ScriptObjects $currentDatabase $scanType ($d.tables.foreignKeys | Where-object { -not $_.IsSystemObject }) "Foreign Keys" $lastScan.LastScan
-
+    ScriptObjects $currentDatabase $scanType ($d.Views | Where-object { -not $_.IsSystemObject }) "Views" $lastScan.LastScan
 }
 if ($saveTo -eq "Database")
 {
