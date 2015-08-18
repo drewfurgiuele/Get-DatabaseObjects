@@ -80,7 +80,8 @@ function ScriptObjects($dbn, $scanType, $objects, $typeName, $previousScanDate)
 				$row["ObjectFullName"] = $objectFullName
 				$row["ObjectSchemaName"] = $o.Schema
 				$row["ObjectFullName"] = $objectFullName
-				$row["ObjectName"] = $o.Name
+                $row["ObjectID"] = $o.ID				
+                $row["ObjectName"] = $o.Name
 				$row["ObjectType"] = $typeName
 				$row["CaptureDate"] = $scanDate.ToString();
 				$row["ObjectCreateDate"] = $o.Properties["CreateDate"].Value
