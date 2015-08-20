@@ -18,6 +18,7 @@ param(
     [Parameter(Mandatory=$false)] [string]$repoSchemaName = "Repo",
 	[Parameter(Mandatory=$false)] [string]$repoTableName = "ObjectsRepository"
 )
+
 $scanDate = Get-Date
 $timestamp = Get-Date -UFormat "%Y%m%d_%H%M%S"
 
@@ -99,14 +100,15 @@ foreach ($d in $databases)
     $currentDatabase = $d.Name
     Write-Verbose "Scanning database: $currentDatabase"
         
-    ScriptObjects $currentDatabase $scanType ($d.Schemas | Where-object { -not $_.IsSystemObject }) "Schema" $lastScan
+    ScriptObjects $currentDatabase $scanType ($d.Schemas | Where-object { -not $_.IsSystemObject }) "Schemas" $lastScan
 	ScriptObjects $currentDatabase $scanType ($d.Users | Where-object { -not $_.IsSystemObject }) "Users" $lastScan
-    ScriptObjects $currentDatabase $scanType ($d.UserDefinedTableTypes | Where-object { -not $_.IsSystemObject }) "User-Defined Table Type" $lastScan.LastScan
-    ScriptObjects $currentDatabase $scanType ($d.UserDefinedTypes | Where-object { -not $_.IsSystemObject }) "User-Defined Type" $lastScan
-    ScriptObjects $currentDatabase $scanType ($d.UserDefinedDataTypes | Where-object { -not $_.IsSystemObject }) "User-Defined Data Type" $lastScan
+    ScriptObjects $currentDatabase $scanType ($d.UserDefinedTableTypes | Where-object { -not $_.IsSystemObject }) "User-Defined Table Types" $lastScan.LastScan
+    ScriptObjects $currentDatabase $scanType ($d.UserDefinedTypes | Where-object { -not $_.IsSystemObject }) "User-Defined Types" $lastScan
+    ScriptObjects $currentDatabase $scanType ($d.UserDefinedDataTypes | Where-object { -not $_.IsSystemObject }) "User-Defined Data Types" $lastScan
+    ScriptObjects $currentDatabase $scanType ($d.XmlSchemaCollections | Where-object { -not $_.IsSystemObject }) "XML Schema Collections" $lastScan.LastScan
     ScriptObjects $currentDatabase $scanType ($d.UserDefinedFunctions | Where-object { -not $_.IsSystemObject }) "Functions" $lastScan.LastScan
     ScriptObjects $currentDatabase $scanType ($d.StoredProcedures | Where-object { -not $_.IsSystemObject }) "Stored Procedures" $lastScan.LastScan
-    ScriptObjects $currentDatabase $scanType ($d.tables | Where-object { -not $_.IsSystemObject }) "Table" $lastScan.LastScan
+    ScriptObjects $currentDatabase $scanType ($d.tables | Where-object { -not $_.IsSystemObject }) "Tables" $lastScan.LastScan
 	ScriptObjects $currentDatabase $scanType ($d.tables.indexes | Where-object { -not $_.IsSystemObject -and ($_.IndexKeyType.ToString()) -ne "DriPrimaryKey"}) "Indexes" $lastScan.LastScan
 	ScriptObjects $currentDatabase $scanType ($d.tables.foreignKeys | Where-object { -not $_.IsSystemObject }) "Foreign Keys" $lastScan.LastScan
     ScriptObjects $currentDatabase $scanType ($d.Views | Where-object { -not $_.IsSystemObject }) "Views" $lastScan.LastScan
