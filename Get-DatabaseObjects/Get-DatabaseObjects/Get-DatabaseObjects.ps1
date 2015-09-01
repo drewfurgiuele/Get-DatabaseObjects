@@ -1,9 +1,32 @@
 ﻿<#
 .SYNOPSIS
+	Exports an entire database's worth of DDL statements for tables, views, indexes, and more for DR purposes.
 .DESCRIPTION
-.PARAMETER SourceInstanceName
+	Do you have reporting replicas? Do you not want to back up the data, but just the objects? This script will do just that: it will take an entire database's worth of objects and script them out to either
+	a file or a target database repository.
+.PARAMETER serverName
+	The name of the server you want to get the objects from.
+.PARAMETER instanceName
+	The instance name of the server you want to get the objects from. Defaults to DEFAULT if not provided (for non-named instances). This is an optional parameter.
+.PARAMETER databaseName
+	The instance name of the database you want to collect object DDL information from. The script will collect all databases and all objects if not provided. This is an optional parameter.
+.PARAMETER saveTo
+	Where should the script output the scripts to? Choices are:
+	1. File: Outputs a file (to the path provided by the FileName paramter)
+	2. Database: You can save the scripts to a database for version control, will require an existing database and repository table.
+.PARAMETER fileName
+	If 'saveTo' is a file, the full path to the target file. Does not need to exist. This parameter is required if SaveTo parameter is 'file'
+.PARAMETER repoServerName
+	If 'saveTo' is a database, the name of the database server where the repository is located.	
+.PARAMETER repoInstanceName
+	If 'saveTo' is a database, the instance name of the database server where the repository is located. Defaults to 'DEFAULT' if not provided (for non-named instances).
+.PARAMETER repoTableName
+	If 'saveTo' is a database, the name of the table that will store the output the scripts.
 .EXAMPLE
+	./Get-DatabaseObjects.ps1 -sername localhost -databaseName AdventureWorks2014 -saveTo File -fileName C:\temp\AdventureWorks2014Objects.sql
+	Connects to a locally hosted instace of SQL Server, scripts out all objects in the database, and creates a .sql file in the C:\temp directory of the local machine.
 .OUTPUTS
+	None, unless -verbose is specified. In fact, -verbose is reccomended so you can see what's going on and when.
 .NOTES
 #>
 param(
